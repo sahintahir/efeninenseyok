@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Efe'nin Ensesi Yok - Lanetli Site</title>
+    <style>
+        /* ========== TÜM STILLER ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="black" stroke="red" stroke-width="2"/><circle cx="16" cy="16" r="6" fill="red"/></svg>') 16 16, auto;
+        }
+
+        body {
+            background: #0a0000;
+            color: #ff0000;
+            font-family: 'Courier New', monospace;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ===== KAPLAMA EKRANI ===== */
+        #karanlik {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            transition: opacity 1s;
+        }
+
+        #karanlik.gizli {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #giris-metni {
+            text-align: center;
+            background: #1a0000;
+            padding: 60px 80px;
+            border: 3px solid #ff0000;
+            border-radius: 20px;
+            box-shadow: 0 0 100px rgba(255, 0, 0, 0.3);
+            animation: titreme 2s infinite;
+        }
+
+        #giris-metni h1 {
+            font-size: 48px;
+            color: #ff0000;
+            text-shadow: 0 0 30px red;
+            margin-bottom: 20px;
+        }
+
+        #giris-metni p {
+            font-size: 18px;
+            color: #ff6666;
+            margin: 10px 0;
+        }
+
+        #giris-metni strong {
+            color: #ff0000;
+            font-size: 22px;
+        }
+
+        #giris-input {
+            background: #0a0000;
+            border: 2px solid #ff0000;
+            color: #ff0000;
+            padding: 15px 30px;
+            font-size: 20px;
+            margin: 20px 0;
+            width: 300px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            border-radius: 10px;
+        }
+
+        #giris-input:focus {
+            outline: none;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.5);
+        }
+
+        #giris-buton {
+            background: #ff0000;
+            color: #000;
+            border: none;
+            padding: 15px 50px;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: 0.3s;
+        }
+
+        #giris-buton:hover {
+            background: #cc0000;
+            transform: scale(1.1);
+            box-shadow: 0 0 50px red;
+        }
+
+        #giris-hatasi {
+            color: #ff3333;
+            margin-top: 15px;
+            font-size: 18px;
+            animation: titreme 0.5s infinite;
+        }
+
+        .gizli {
+            display: none !important;
+        }
+
+        /* ===== ANA SAYFA ===== */
+        #ana {
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        #ana.gizli {
+            display: none !important;
+        }
+
+        /* ===== ENSE GÖRSELİ ===== */
+        #ense-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 20px auto;
+        }
+
+        #ense-bosluk {
+            width: 100%;
+            height: 100%;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            background: radial-gradient(circle, #1a0000 0%, #000 70%, #0a0000 100%);
+            border: 5px solid #ff0000;
+            box-shadow: 0 0 80px rgba(255, 0, 0, 0.4), inset 0 0 80px rgba(255, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: nabiz 2s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #ense-bosluk::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, transparent 30%, rgba(255, 0, 0, 0.05) 70%, transparent 100%);
+            animation: donme 20s linear infinite;
+        }
+
+        #enis {
+            font-size: 80px;
+            text-shadow: 0 0 50px red, 0 0 100px darkred;
+            z-index: 2;
+            animation: nefes 3s infinite;
+        }
+
+        #ense-yazisi {
+            font-size: 28px;
+            color: #ff0000;
+            display: block;
+            text-shadow: 0 0 30px red;
+        }
+
+        #bosluk-efekti {
+            font-size: 100px;
+            display: block;
+            animation: donme 4s linear infinite;
+        }
+
+        #ense-etiket {
+            margin-top: 15px;
+            font-size: 24px;
+            color: #ff0000;
+            text-shadow: 0 0 30px red;
+            letter-spacing: 5px;
+            animation: titreme 1.5s infinite;
+        }
+
+        /* ===== BİLGİ PANELİ ===== */
+        #bilgi {
+            display: flex;
+            gap: 50px;
+            margin: 20px 0;
+            font-size: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 40px;
+            border: 2px solid #ff0000;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
+        }
+
+        #zaman, #sure {
+            color: #ff6666;
+            text-shadow: 0 0 20px red;
+        }
+
+        #zaman span, #sure span {
+            color: #ff0000;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        /* ===== NAS SURESİ BİLGİSİ ===== */
+        #nas-bilgi {
+            margin: 15px 0;
+            padding: 15px 30px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            border-radius: 10px;
+            display: flex;
+            gap: 30px;
+            font-size: 18px;
+        }
+
+        #nas-sayac, #nas-durum {
+            color: #ff6666;
+        }
+
+        #nas-durum.okunuyor {
+            color: #00ff00;
+            animation: titreme 0.5s infinite;
+        }
+
+        /* ===== UYARI ===== */
+        #uyari {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff0000;
+            color: #000;
+            padding: 20px 40px;
+            font-size: 28px;
+            font-weight: bold;
+            border-radius: 10px;
+            animation: titreme 0.3s infinite;
+            z-index: 100;
+            box-shadow: 0 0 60px red;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+
+        #uyari.gizli {
+            display: none;
+        }
+
+        /* ===== KURTULUŞ BUTONU ===== */
+        #kurtulus {
+            margin-top: 30px;
+        }
+
+        #kurtulus.gizli {
+            display: none;
+        }
+
+        #kurtarici {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 20px 60px;
+            font-size: 28px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: 0.3s;
+            box-shadow: 0 0 60px rgba(0, 255, 0, 0.3);
+            animation: titreme 1s infinite;
+        }
+
+        #kurtarici:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 100px rgba(0, 255, 0, 0.6);
+        }
+
+        #kurtulus-mesaji {
+            color: #00ff00;
+            font-size: 32px;
+            margin-top: 20px;
+            text-shadow: 0 0 40px #00ff00;
+            animation: titreme 0.5s infinite;
+        }
+
+        #kurtulus-mesaji.gizli {
+            display: none;
+        }
+
+        /* ===== TİTREŞİM KONTEYNERİ ===== */
+        #titresim {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        #titresim.gizli {
+            display: none;
+        }
+
+        #titresim.aktif {
+            display: block;
+            animation: deprem 0.1s infinite;
+        }
+
+        /* ===== ANİMASYONLAR ===== */
+        @keyframes titreme {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes nabiz {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes donme {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes nefes {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
+        }
+
+        @keyframes deprem {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-10px, 5px); }
+            50% { transform: translate(10px, -5px); }
+            75% { transform: translate(-5px, 10px); }
+            100% { transform: translate(5px, -10px); }
+        }
+
+        @keyframes kanama {
+            0% { box-shadow: 0 0 40px rgba(255,0,0,0.5); }
+            50% { box-shadow: 0 0 100px rgba(255,0,0,0.8), inset 0 0 100px rgba(255,0,0,0.3); }
+            100% { box-shadow: 0 0 40px rgba(255,0,0,0.5); }
+        }
+
+        /* ===== SCROLL BAR SAKLA ===== */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            #giris-metni { padding: 30px 20px; }
+            #giris-metni h1 { font-size: 28px; }
+            #giris-input { width: 200px; font-size: 16px; }
+            #ense-container { width: 250px; height: 250px; }
+            #bilgi { flex-direction: column; gap: 10px; padding: 15px; }
+            #nas-bilgi { flex-direction: column; gap: 10px; }
+            #uyari { font-size: 18px; padding: 15px 25px; }
+            #kurtarici { font-size: 20px; padding: 15px 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== KAPLAMA EKRANI ========== -->
+    <div id="karanlik">
+        <div id="giris-metni">
+            <h1>🕳️ EFENİN ENSESİ YOK</h1>
+            <p>Bu siteye girmek, enseni riske atmaktır.</p>
+            <p>Devam etmek için <strong>"Bismillah"</strong> yaz.</p>
+            <input type="text" id="giris-input" placeholder="Bismillah yaz..." autofocus>
+            <br>
+            <button id="giris-buton">GİR</button>
+            <div id="giris-hatasi" class="gizli">❌ YANLIŞ! ENSENİ KAYBEDECEKSİN!</div>
+        </div>
+    </div>
+
+    <!-- ========== ANA SAYFA ========== -->
+    <div id="ana" class="gizli">
+
+        <!-- ENSE GÖRSELİ -->
+        <div id="ense-container">
+            <div id="ense-bosluk">
+                <div id="enis">
+                    <span id="ense-yazisi">ENSEN? </span>
+                    <span id="bosluk-efekti">🕳️</span>
+                </div>
+            </div>
+            <div id="ense-etiket">EFE'NİN ENSESİ YOK</div>
+        </div>
+
+        <!-- BİLGİ PANELİ -->
+        <div id="bilgi">
+            <div id="zaman">⏰ <span id="saat">00:00</span></div>
+            <div id="sure">⏳ <span id="kalan-sure">60</span> saniye</div>
+        </div>
+
+        <!-- NAS SURESİ BİLGİSİ -->
+        <div id="nas-bilgi">
+            <span id="nas-sayac">📖 1. Nas Suresi</span>
+            <span id="nas-durum">⏳ Bekleniyor...</span>
+        </div>
+
+        <!-- UYARI -->
+        <div id="uyari" class="gizli">
+            ⚠️ ENSENİ KONTROL ET! ⚠️
+        </div>
+
+        <!-- KURTULUŞ BUTONU -->
+        <div id="kurtulus" class="gizli">
+            <button id="kurtarici">ESTAĞFİRULLAH DE & KURTUL</button>
+            <p id="kurtulus-mesaji" class="gizli">✅ Ensem var! Şükür! 🌙</p>
+        </div>
+
+        <!-- SES OYNATICI (GİZLİ) -->
+        <audio id="nas-sesi" preload="auto"></audio>
+
+        <!-- TİTREŞİM KONTEYNERİ -->
+        <div id="titresim" class="gizli"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ========== JAVASCRIPT ========== -->
+    <script>
+        // ==========================================
+        // KONFİGÜRASYON
+        // ==========================================
+        const KONFIG = {
+            nasSuresiMetni: [
+                "Kul e'ûzu birabbinnâs.",
+                "Melikinnâs.",
+                "İlâhinnâs.",
+                "Min şerril vesvâsil hannâs.",
+                "Elleziy yuvesvisu fî sudûrinnâs.",
+                "Minel cinneti vannâs."
+            ],
+            nasSureAraligi: 60, // 60 saniye
+            uyariGosterimSuresi: 10, // 10 saniye
+            titresimSuresi: 5, // 5 saniye
+            kurtulusKelimesi: "estağfirullah"
+        };
+
+        // ==========================================
+        // DEĞİŞKENLER
+        // ==========================================
+        let nasSayac = 1;
+        let kalanSure = KONFIG.nasSureAraligi;
+        let sureAraligi = null;
+        let nasSesi = null;
+        let titresimAktif = false;
+        let uyariAktif = false;
+        let kurtuldu = false;
+
+        // DOM ELEMENTLERİ
+        const girisEkrani = document.getElementById('karanlik');
+        const anaSayfa = document.getElementById('ana');
+        const girisInput = document.getElementById('giris-input');
+        const girisButon = document.getElementById('giris-buton');
+        const girisHatasi = document.getElementById('giris-hatasi');
+        const saatSpan = document.getElementById('saat');
+        const kalanSureSpan = document.getElementById('kalan-sure');
+        const nasSayacSpan = document.getElementById('nas-sayac');
+        const nasDurumSpan = document.getElementById('nas-durum');
+        const uyariDiv = document.getElementById('uyari');
+        const kurtulusDiv = document.getElementById('kurtulus');
+        const kurtariciButon = document.getElementById('kurtarici');
+        const kurtulusMesaji = document.getElementById('kurtulus-mesaji');
+        const titresimDiv = document.getElementById('titresim');
+        const nasSesiElement = document.getElementById('nas-sesi');
+        const enseBosluk = document.getElementById('ense-bosluk');
+
+        // ==========================================
+        // GİRİŞ EKRANI
+        // ==========================================
+        girisButon.addEventListener('click', girisKontrol);
+        girisInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') girisKontrol();
+        });
+
+        function girisKontrol() {
+            const deger = girisInput.value.trim().toLowerCase();
+            if (deger === 'bismillah') {
+                girisEkrani.classList.add('gizli');
+                anaSayfa.classList.remove('gizli');
+                baslat();
+            } else {
+                girisHatasi.classList.remove('gizli');
+                girisInput.style.borderColor = '#ff0000';
+                girisInput.value = '';
+                setTimeout(() => {
+                    girisHatasi.classList.add('gizli');
+                    girisInput.style.borderColor = '#ff0000';
+                }, 3000);
+                // Yanlış girişte enseni çalıyoruz (efekt)
+                enseCal();
+            }
+        }
+
+        function enseCal() {
+            document.body.style.backgroundColor = '#1a0000';
+            setTimeout(() => {
+                document.body.style.backgroundColor = '#0a0000';
+            }, 500);
+        }
+
+        // ==========================================
+        // ANA FONKSİYONLAR
+        // ==========================================
+        function baslat() {
+            saatGuncelle();
+            setInterval(saatGuncelle, 1000);
+            
+            // İlk Nas Suresi'ni 5 saniye sonra oku
+            setTimeout(() => {
+                nasOku();
+            }, 5000);
+
+            // Her 60 saniyede Nas Suresi
+            sureAraligi = setInterval(() => {
+                if (!kurtuldu) {
+                    nasOku();
+                }
+            }, KONFIG.nasSureAraligi * 1000);
+
+            // Sayaç
+            setInterval(() => {
+                if (!kurtuldu) {
+                    kalanSure--;
+                    kalanSureSpan.textContent = kalanSure;
+                    if (kalanSure <= 0) {
+                        kalanSure = KONFIG.nasSureAraligi;
+                    }
+                }
+            }, 1000);
+
+            // Kurtuluş butonu
+            kurtariciButon.addEventListener('click', kurtul);
+        }
+
+        // ==========================================
+        // NAS SURESİ OKUMA
+        // ==========================================
+        function nasOku() {
+            if (kurtuldu) return;
+
+            // Durum güncelle
+            nasDurumSpan.textContent = '🔊 OKUNUYOR...';
+            nasDurumSpan.classList.add('okunuyor');
+            nasSayacSpan.textContent = `📖 ${nasSayac}. Nas Suresi`;
+
+            // Sentez ses oluştur (konuşma sentezi)
+            const metin = KONFIG.nasSuresiMetni.join('. ');
+            const utterance = new SpeechSynthesisUtterance(metin);
+            utterance.lang = 'ar-SA';
+            utterance.rate = 0.7;
+            utterance.pitch = 0.5;
+            utterance.volume = 1;
+
+            // Ses efektleri
+            utterance.onstart = function() {
+                // Titreşim başlat
+                titresimBaslat();
+                // Uyarı göster
+                uyariGoster();
+                // Ense efekti
+                enseBosluk.style.animation = 'kanama 1s infinite';
+                // Arka plan kan efekti
+                document.body.style.backgroundColor = '#1a0000';
+            };
+
+            utterance.onend = function() {
+                nasDurumSpan.textContent = '✅ OKUNDU';
+                nasDurumSpan.classList.remove('okunuyor');
+                nasSayac++;
+                kalanSure = KONFIG.nasSureAraligi;
+                kalanSureSpan.textContent = kalanSure;
+                enseBosluk.style.animation = 'nabiz 2s infinite';
+                document.body.style.backgroundColor = '#0a0000';
+                titresimDurdur();
+                uyariGizle();
+            };
+
+            // Hata durumunda
+            utterance.onerror = function() {
+                nasDurumSpan.textContent = '❌ HATA! ENSEN TEHLİKEDE!';
+                setTimeout(() => {
+                    nasDurumSpan.textContent = '⏳ Bekleniyor...';
+                }, 3000);
+            };
+
+            speechSynthesis.speak(utterance);
+
+            // Nas Suresi metnini ekranda göster
+            const sureMetni = document.createElement('div');
+            sureMetni.style.position = 'fixed';
+            sureMetni.style.bottom = '20px';
+            sureMetni.style.left = '50%';
+            sureMetni.style.transform = 'translateX(-50%)';
+            sureMetni.style.background = 'rgba(0,0,0,0.9)';
+            sureMetni.style.color = '#ff0000';
+            sureMetni.style.padding = '15px 30px';
+            sureMetni.style.borderRadius = '10px';
+            sureMetni.style.border = '2px solid #ff0000';
+            sureMetni.style.fontSize = '18px';
+            sureMetni.style.zIndex = '200';
+            sureMetni.style.textAlign = 'center';
+            sureMetni.style.maxWidth = '90%';
+            sureMetni.innerHTML = `
+                <strong>📖 Nas Suresi ${nasSayac}</strong><br>
+                <span style="color:#ff6666;font-size:14px;">${KONFIG.nasSuresiMetni.join(' ')}</span>
+            `;
+            document.body.appendChild(sureMetni);
+
+            setTimeout(() => {
+                if (sureMetni.parentNode) {
+                    sureMetni.remove();
+                }
+            }, 8000);
+
+            // Her okumada uyarıyı güçlendir
+            if (nasSayac > 3) {
+                uyariDiv.style.fontSize = '32px';
+                uyariDiv.style.background = '#cc0000';
+            }
+            if (nasSayac > 5) {
+                document.body.style.animation = 'deprem 0.1s infinite';
+                setTimeout(() => {
+                    document.body.style.animation = '';
+                }, 5000);
+            }
+        }
+
+        // ==========================================
+        // TİTREŞİM
+        // ==========================================
+        function titresimBaslat() {
+            if (titresimAktif) return;
+            titresimAktif = true;
+            titresimDiv.classList.remove('gizli');
+            titresimDiv.classList.add('aktif');
+            document.body.style.animation = 'deprem 0.05s infinite';
+            
+            setTimeout(() => {
+                titresimDurdur();
+            }, KONFIG.titresimSuresi * 1000);
+        }
+
+        function titresimDurdur() {
+            titresimAktif = false;
+            titresimDiv.classList.remove('aktif');
+            titresimDiv.classList.add('gizli');
+            document.body.style.animation = '';
+        }
+
+        // ==========================================
+        // UYARI
+        // ==========================================
+        function uyariGoster() {
+            if (uyariAktif) return;
+            uyariAktif = true;
+            uyariDiv.classList.remove('gizli');
+            
+            setTimeout(() => {
+                uyariGizle();
+            }, KONFIG.uyariGosterimSuresi * 1000);
+        }
+
+        function uyariGizle() {
+            uyariAktif = false;
+            uyariDiv.classList.add('gizli');
+        }
+
+        // ==========================================
+        // KURTULUŞ
+        // ==========================================
+        function kurtul() {
+            if (kurtuldu) return;
+            
+            // Estağfirullah de
+            const utterance = new SpeechSynthesisUtterance('Estağfirullah el-Azim ve etübü ileyh');
+            utterance.lang = 'tr-TR';
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
+
+            // Kurtuluş mesajı
+            kurtuldu = true;
+            kurtulusMesaji.classList.remove('gizli');
+            kurtariciButon.textContent = '✅ KURTULDUN!';
+            kurtariciButon.style.background = '#00ff00';
+            kurtariciButon.style.color = '#000';
+            kurtariciButon.style.cursor = 'default';
+            kurtariciButon.disabled = true;
+
+            // Sayaç durdur
+            clearInterval(sureAraligi);
+
+            // Ensede nur efekti
+            enseBosluk.style.background = 'radial-gradient(circle, #003300 0%, #000 70%, #001a00 100%)';
+            enseBosluk.style.borderColor = '#00ff00';
+            enseBosluk.style.boxShadow = '0 0 100px rgba(0, 255, 0, 0.6)';
+            document.getElementById('bosluk-efekti').textContent = '🌙';
+            document.getElementById('ense-yazisi').textContent = 'ENSEN VAR!';
+
+            // Uyarıyı gizle
+            uyariGizle();
+            titresimDurdur();
+
+            // Zafer mesajı
+            const mesaj = document.createElement('div');
+            mesaj.style.position = 'fixed';
+            mesaj.style.top = '50%';
+            mesaj.style.left = '50%';
+            mesaj.style.transform = 'translate(-50%, -50%)';
+            mesaj.style.background = 'rgba(0,0,0,0.95)';
+            mesaj.style.color = '#00ff00';
+            mesaj.style.padding = '40px 60px';
+            mesaj.style.borderRadius = '20px';
+            mesaj.style.border = '3px solid #00ff00';
+            mesaj.style.fontSize = '36px';
+            mesaj.style.zIndex = '9999';
+            mesaj.style.textAlign = 'center';
+            mesaj.style.boxShadow = '0 0 100px rgba(0,255,0,0.5)';
+            mesaj.innerHTML = `
+                ✅ KURTULDUN!<br>
+                <span style="font-size:20px;color:#66ff66;">Ensen emanettir. Unutma!</span><br>
+                <span style="font-size:16px;color:#00cc00;">🤲 Estağfirullah</span>
+            `;
+            document.body.appendChild(mesaj);
+
+            setTimeout(() => {
+                if (mesaj.parentNode) {
+                    mesaj.remove();
+                }
+            }, 10000);
+
+            // Kurtuluş duası
+            const dua = new SpeechSynthesisUtterance('Elhamdülillah. Şükürler olsun. Ensem yerinde.');
+            dua.lang = 'tr-TR';
+            dua.rate = 0.9;
+            setTimeout(() => {
+                speechSynthesis.speak(dua);
+            }, 2000);
+        }
+
+        // ==========================================
+        // SAAT
+        // ==========================================
+        function saatGuncelle() {
+            const now = new Date();
+            const saat = String(now.getHours()).padStart(2, '0');
+            const dakika = String(now.getMinutes()).padStart(2, '0');
+            const saniye = String(now.getSeconds()).padStart(2, '0');
+            saatSpan.textContent = `${saat}:${dakika}:${saniye}`;
+
+            // 03:33 uyarısı
+            if (saat === '03' && dakika === '33' && saniye === '00') {
+                if (!kurtuldu) {
+                    uyariGoster();
+                    titresimBaslat();
+                    enseBosluk.style.animation = 'kanama 0.5s infinite';
+                    setTimeout(() => {
+                        enseBosluk.style.animation = 'nabiz 2s infinite';
+                    }, 10000);
+                }
+            }
+        }
+
+        // ==========================================
+        // FARE HAREKETİ – ENSE TAKİBİ
+        // ==========================================
+        document.addEventListener('mousemove', (e) => {
+            if (kurtuldu) return;
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            document.getElementById('ense-bosluk').style.transform = `rotateX(${-y}deg) rotateY(${x}deg)`;
+        });
+
+        // ==========================================
+        // KONSOL UYARISI
+        // ==========================================
+        console.log('%c🕳️ EFENİN ENSESİ YOK', 'font-size:40px;color:red;font-weight:bold;');
+        console.log('%cEnsene dokun. Orada ne var?', 'font-size:20px;color:#ff6666;');
+        console.log('%cEstağfirullah de, kurtul!', 'font-size:18px;color:#00ff00;');
+
+        // ==========================================
+        // SAYFA KAPANMA ENGELLEME
+        // ==========================================
+        window.addEventListener('beforeunload', (e) => {
+            if (!kurtuldu) {
+                e.preventDefault();
+                e.returnValue = 'Ensensiz mi gideceksin?';
+                return 'Ensensiz mi gideceksin?';
+            }
+        });
+
+        // ==========================================
+        // KLİPYE ENGELLEME
+        // ==========================================
+        document.addEventListener('copy', (e) => {
+            if (!kurtuldu) {
+                e.preventDefault();
+                alert('❌ Ensensiz kopyalama yapamazsın!');
+            }
+        });
+
+        // ==========================================
+        // SAĞ TIK ENGELLEME
+        // ==========================================
+        document.addEventListener('contextmenu', (e) => {
+            if (!kurtuldu) {
+                e.preventDefault();
+                alert('🕳️ Ensen yok! Sağ tıklayamazsın!');
+            }
+        });
+
+        // ==========================================
+        // BAŞLANGIÇTA ENSENİ KONTROL ET
+        // ==========================================
+        console.log('🔴 Ensene dokun!');
+        console.log('🔴 Hala orada mı?');
+        console.log('🟢 Estağfirullah de ve kurtul!');
+
+        // Sayfa yüklendiğinde uyarı
+        window.onload = function() {
+            setTimeout(() => {
+                if (!kurtuldu) {
+                    const kontrol = confirm('🕳️ ENSENİ KONTROL ET! Hala orada mı?');
+                    if (!kontrol) {
+                        alert('❌ Ensem yok! PANİK!');
+                        titresimBaslat();
+                        uyariGoster();
+                    } else {
+                        alert('✅ Ensem var... Şimdilik.');
+                    }
+                }
+            }, 3000);
+        };
+    </script>
+</body>
+</html>
